@@ -14,7 +14,7 @@ const Pads = (props) => {
     const { audioSounds,changePlayingStatus } = props;
 
     return (
-        <Grid container justify="'space-evenly'" item xs={12} spacing={3} className={classes.padsContainer}>
+        <Grid container justify="space-evenly" item xs={12} spacing={3} className={classes.padsContainer}>
             {audioSounds.map(as => <Pad key={as.id} audioSound={as} changePlayingStatus={changePlayingStatus} />)}
         </Grid>
     );
