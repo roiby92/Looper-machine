@@ -132,12 +132,11 @@ function App() {
   useEffect(() => {
     if (isOn) {
       if (timer === false) {
-        return console.log('IM NULL');
+        return;
       }
       else if (timer > 0) {
         setTimeout(() => {
           setTimer(timer - 1)
-          console.log(timer);
         }, 1000)
       }
       else if (timer === 0) {
@@ -149,10 +148,12 @@ function App() {
     }
   }, [isOn, timer])
 
+  // setting looper to on
   const play = useCallback(() => {
     setIsOn(true);
   }, []);
 
+  // set looper to of, all audio sound to off
   const stop = () => {
     setIsOn(false);
     const audioSoundsCopy = [...audioSounds];
@@ -167,6 +168,7 @@ function App() {
     setAudioSounds(audioSoundsCopy);
   };
 
+  // push the audio sound to the stand by array, until playing tracks will finish
   const pushToStandBy = (audioSound) => {
     return standBy.push({
       id: audioSound.id,
@@ -178,6 +180,7 @@ function App() {
     )
   }
 
+
   const turnOffSound = (audioSound) => {
     audioSound.isPlaying = false;
     audioSound.sound.stop();
@@ -185,13 +188,11 @@ function App() {
     if (clearAll) {
       clearAll.action = clearInterval(clearAll.action)
       standBy.shift();
-      console.log(clearAll, standBy);
     }
-    console.log('OFF', audioSound.id);
   }
 
+  // check the looper status
   const checkStatus = () => {
-    console.log(audioSounds.filter(as => as.isPlaying))
     if (audioSounds.filter(as => as.isPlaying).length === 0) {
       stop()
       setMessage("All Pads are off, looper is turn off,click Play OR Record Button's to start again")
@@ -209,10 +210,8 @@ function App() {
         if (!timer) {
           setTimer(8)
           audioSound.sound.play()
-          console.log(timer, 'STATUS');
         }
         else {
-          console.log('SONG STAND BY WITH ' + timer + " sec")
           pushToStandBy(audioSound)
         };
       }
