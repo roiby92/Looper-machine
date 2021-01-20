@@ -194,7 +194,7 @@ function App() {
     console.log(audioSounds.filter(as => as.isPlaying))
     if (audioSounds.filter(as => as.isPlaying).length === 0) {
       stop()
-      setMessage('All Pads are off, looper is of, please reset the looper by click PLAY')
+      setMessage("All Pads are off, looper is turn off,click Play OR Record Button's to start again")
       setOpenMessage(true)
     }
   }
@@ -223,7 +223,7 @@ function App() {
       }
     }
     else {
-      setMessage('cannot play audio withaout push the play buttonm')
+      setMessage("Push Play OR Record Button's to get started")
       setOpenMessage(true)
     };
   };
@@ -235,7 +235,7 @@ function App() {
       <Grid container justify="center" direction="row">
         <NavBar />
         <Pads audioSounds={audioSounds} changePlayingStatus={changePlayingStatus} />
-        <Controlers play={play} stop={stop}/>
+        <Controlers play={play} stop={stop} />
         <Message openMessage={openMessage} message={message} handleClose={handleClose} />
       </Grid>
     </div>

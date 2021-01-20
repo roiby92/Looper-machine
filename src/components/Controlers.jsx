@@ -26,7 +26,7 @@ const Controlers = (props) => {
                     </Button>
                 </Grid>
                 <Grid item>
-                    <Recorde stopPad = {stop}/>
+                    <Recorde stopPad={stop} startPad={play} />
                 </Grid>
             </Grid>
         </div>

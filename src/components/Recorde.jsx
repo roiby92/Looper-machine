@@ -21,6 +21,7 @@ class Recorde extends React.Component {
                 .start()
                 .then(() => {
                     this.setState({ isRecording: true });
+                    this.props.startPad();
                 }).catch((e) => console.error(e));
         }
     };
