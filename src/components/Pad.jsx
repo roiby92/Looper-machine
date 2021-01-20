@@ -1,16 +1,14 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles';
-import { Grid } from '@material-ui/core';
-
+import { Grid, Button } from '@material-ui/core';
 const useStyles = makeStyles(() => ({
     pad: {
-        height: '100px',
-        width: '100px',
-        backgroundColor: 'black',
+        height: '120px',
+        width: '120px',
+        border: '10px black solid',
         borderRadius: '4px',
-    }
+    },
 }));
-
 const Pad = (props) => {
     const classes = useStyles();
     const { audioSound, changePlayingStatus } = props
@@ -21,9 +19,10 @@ const Pad = (props) => {
 
     return (
         <Grid item xs={4} lg={4} container justify='center'>
-            <div className={classes.pad} onClick={changeStatus} >
-            </div>
-        </Grid>
+            <Button variant="contained" className={classes.pad} onClick={changeStatus}>
+                {audioSound.name}
+            </Button>
+        </Grid >
     );
 };
 export default Pad;

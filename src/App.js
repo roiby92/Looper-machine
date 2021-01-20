@@ -14,12 +14,14 @@ import PASGROOVE from './AudioFiles/PAS3GROOVE.mp3'
 import SilentStarOrganSynth from './AudioFiles/SilentStarOrganSynth.mp3'
 import StompySlosh from './AudioFiles/StompySlosh.mp3'
 import StutterBreakBeats from './AudioFiles/stutterBreakBeats16.mp3'
+import Message from './components/Message';
+
 
 const useStyles = makeStyles(() => ({
   app: {
     backgroundColor: '#595454',
-    height: '100vh',
-    width: '100wh'
+    height: '130vh',
+    width: '130wh'
   }
 }));
 
@@ -29,6 +31,7 @@ function App() {
   const [audioSounds, setAudioSounds] = useState([
     {
       id: 1,
+      name: 'Heavy funk groov',
       sound: new Howl({
         src: HeavyFunkGroove,
         loop: true,
@@ -38,6 +41,7 @@ function App() {
     },
     {
       id: 2,
+      name: 'electric guitar',
       sound: new Howl({
         src: ElectricGuitarCoutrySlide,
         loop: true,
@@ -47,6 +51,7 @@ function App() {
     },
     {
       id: 3,
+      name: 'Future Funk Beats',
       sound: new Howl({
         src: FutureFunkBeats,
         loop: true,
@@ -56,6 +61,7 @@ function App() {
     },
     {
       id: 4,
+      name: 'tanggu grove',
       sound: new Howl({
         src: GrooveBTanggu,
         loop: true,
@@ -65,6 +71,7 @@ function App() {
     },
     {
       id: 5,
+      name: 'Maze Politics',
       sound: new Howl({
         src: MazePolitics,
         loop: true,
@@ -74,6 +81,7 @@ function App() {
     },
     {
       id: 6,
+      name: 'pass groove',
       sound: new Howl({
         src: PASGROOVE,
         loop: true,
@@ -83,6 +91,7 @@ function App() {
     },
     {
       id: 7,
+      name: 'Silent Star Organ Synth',
       sound: new Howl({
         src: SilentStarOrganSynth,
         loop: true,
@@ -92,6 +101,7 @@ function App() {
     },
     {
       id: 8,
+      name: 'Stompy Slosh',
       sound: new Howl({
         src: StompySlosh,
         loop: true,
@@ -101,6 +111,7 @@ function App() {
     },
     {
       id: 9,
+      name: 'Stutter Break Beats',
       sound: new Howl({
         src: StutterBreakBeats,
         loop: true,
@@ -112,7 +123,11 @@ function App() {
 
   const [isOn, setIsOn] = useState(false)
   const [timer, setTimer] = useState(false)
-  const [standBy,setStandBy] = useState([])
+  const [standBy, setStandBy] = useState([])
+  const [openMessage, setOpenMessage] = useState(false)
+  const [message, setMessage] = useState('')
+
+  const handleClose = () => setOpenMessage(false)
 
   useEffect(() => {
     if (isOn) {
@@ -142,24 +157,36 @@ function App() {
     setIsOn(false);
     const audioSoundsCopy = [...audioSounds];
     audioSoundsCopy.forEach(as => {
-      as.isPlaying = false
       as.sound.stop();
+      as.isPlaying = false
     });
     standBy.forEach(sb => {
-      clearTimeout(sb)
+      sb.action = clearTimeout(sb.action)
+      standBy.shift();
     })
     setAudioSounds(audioSoundsCopy);
   };
 
   const pushToStandBy = (audioSound) => {
-    return standBy.push(setTimeout(() => {
-      audioSound.sound.play()
-    }, parseInt(`${timer}000`)))
+    return standBy.push({
+      id: audioSound.id,
+      action: setTimeout(() => {
+        audioSound.sound.play()
+        standBy.shift()
+      }, parseInt(`${timer}000`))
+    }
+    )
   }
 
   const turnOffSound = (audioSound) => {
     audioSound.isPlaying = false;
     audioSound.sound.stop();
+    const clearAll = standBy.filter(sb => sb.id === audioSound.id)[0]
+    if (clearAll) {
+      clearAll.action = clearInterval(clearAll.action)
+      standBy.shift();
+      console.log(clearAll, standBy);
+    }
     console.log('OFF', audioSound.id);
   }
 
@@ -167,7 +194,8 @@ function App() {
     console.log(audioSounds.filter(as => as.isPlaying))
     if (audioSounds.filter(as => as.isPlaying).length === 0) {
       stop()
-      alert('All Pads are off, looper is of, please reset the looper by click PLAY')
+      setMessage('All Pads are off, looper is of, please reset the looper by click PLAY')
+      setOpenMessage(true)
     }
   }
 
@@ -195,7 +223,8 @@ function App() {
       }
     }
     else {
-      alert('cannot play audio withaout push the play buttonm')
+      setMessage('cannot play audio withaout push the play buttonm')
+      setOpenMessage(true)
     };
   };
 
@@ -206,7 +235,8 @@ function App() {
       <Grid container justify="center" direction="row">
         <NavBar />
         <Pads audioSounds={audioSounds} changePlayingStatus={changePlayingStatus} />
-        <Controlers play={play} stop={stop} />
+        <Controlers play={play} stop={stop}/>
+        <Message openMessage={openMessage} message={message} handleClose={handleClose} />
       </Grid>
     </div>
   );
