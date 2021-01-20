@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { makeStyles } from '@material-ui/core/styles';
 import NavBar from './components/NavBar'
 import Pads from './Containers/Pads';
@@ -32,115 +32,173 @@ function App() {
       sound: new Howl({
         src: HeavyFunkGroove,
         loop: true,
-        volume: 0,
-      })
+        volume: 0.5,
+      }),
+      isPlaying: false
     },
     {
       id: 2,
       sound: new Howl({
         src: ElectricGuitarCoutrySlide,
         loop: true,
-        volume: 0
-      })
+        volume: 0.5,
+      }),
+      isPlaying: false
     },
     {
       id: 3,
       sound: new Howl({
         src: FutureFunkBeats,
         loop: true,
-        volume: 0,
-      })
+        volume: 0.5,
+      }),
+      isPlaying: false
     },
     {
       id: 4,
       sound: new Howl({
         src: GrooveBTanggu,
         loop: true,
-        volume: 0,
-      })
+        volume: 0.5,
+      }),
+      isPlaying: false
     },
     {
       id: 5,
       sound: new Howl({
         src: MazePolitics,
         loop: true,
-        volume: 0,
-      })
+        volume: 0.5,
+      }),
+      isPlaying: false
     },
     {
       id: 6,
       sound: new Howl({
         src: PASGROOVE,
         loop: true,
-        volume: 0,
-      })
+        volume: 0.5,
+      }),
+      isPlaying: false
     },
     {
       id: 7,
       sound: new Howl({
         src: SilentStarOrganSynth,
         loop: true,
-        volume: 0,
-      })
+        volume: 0.5,
+      }),
+      isPlaying: false
     },
     {
       id: 8,
       sound: new Howl({
         src: StompySlosh,
         loop: true,
-        volume: 0,
-      })
+        volume: 0.5,
+      }),
+      isPlaying: false
     },
     {
       id: 9,
       sound: new Howl({
         src: StutterBreakBeats,
         loop: true,
-        volume: 0,
-      })
+        volume: 0.5,
+      }),
+      isPlaying: false
     },
   ]);
+
   const [isOn, setIsOn] = useState(false)
-  // const [record, setRecord] = useState({
-  //   isRecording: false,
+  const [timer, setTimer] = useState(false)
+  const [standBy,setStandBy] = useState([])
 
-  // })
+  useEffect(() => {
+    if (isOn) {
+      if (timer === false) {
+        return console.log('IM NULL');
+      }
+      else if (timer > 0) {
+        setTimeout(() => {
+          setTimer(timer - 1)
+          console.log(timer);
+        }, 1000)
+      }
+      else if (timer === 0) {
+        setTimer(8)
+      }
+    }
+    else {
+      setTimer(false)
+    }
+  }, [isOn, timer])
 
-  const play = () => {
-    const audioSoundsCopy = [...audioSounds];
-    audioSoundsCopy.forEach(as => {
-      as.sound.play();
-    });
-    setAudioSounds(audioSoundsCopy);
+  const play = useCallback(() => {
     setIsOn(true);
-  };
+  }, []);
 
   const stop = () => {
+    setIsOn(false);
     const audioSoundsCopy = [...audioSounds];
     audioSoundsCopy.forEach(as => {
-      as.sound.volume(0)
+      as.isPlaying = false
       as.sound.stop();
     });
+    standBy.forEach(sb => {
+      clearTimeout(sb)
+    })
     setAudioSounds(audioSoundsCopy);
-    setIsOn(false)
+  };
+
+  const pushToStandBy = (audioSound) => {
+    return standBy.push(setTimeout(() => {
+      audioSound.sound.play()
+    }, parseInt(`${timer}000`)))
   }
 
-  const changePlayingStatus = id => {
+  const turnOffSound = (audioSound) => {
+    audioSound.isPlaying = false;
+    audioSound.sound.stop();
+    console.log('OFF', audioSound.id);
+  }
+
+  const checkStatus = () => {
+    console.log(audioSounds.filter(as => as.isPlaying))
+    if (audioSounds.filter(as => as.isPlaying).length === 0) {
+      stop()
+      alert('All Pads are off, looper is of, please reset the looper by click PLAY')
+    }
+  }
+
+  const changePlayingStatus = (id) => {
     if (isOn) {
       const audioSoundsCopy = [...audioSounds];
       const audioSound = audioSoundsCopy.find(as => as.id === id);
-      if (audioSound.sound._volume === 0) {
-        audioSound.sound.volume(0.5);
+      if (!audioSound.isPlaying) {
+        audioSound.isPlaying = true;
+        setAudioSounds(audioSoundsCopy);
+        if (!timer) {
+          setTimer(8)
+          audioSound.sound.play()
+          console.log(timer, 'STATUS');
+        }
+        else {
+          console.log('SONG STAND BY WITH ' + timer + " sec")
+          pushToStandBy(audioSound)
+        };
       }
       else {
-        audioSound.sound.volume(0);
-      };
-      setAudioSounds(audioSoundsCopy);
+        turnOffSound(audioSound)
+        setAudioSounds(audioSoundsCopy);
+        checkStatus()
+      }
     }
     else {
       alert('cannot play audio withaout push the play buttonm')
     };
   };
+
 
 
   return (
